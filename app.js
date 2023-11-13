@@ -1,10 +1,17 @@
 // app.js
-const rooms = [];
+const fs = require('fs'); // For Node.js file system operations
+const path = require('path');
+
+const roomsFilePath = path.join(__dirname, 'rooms.json'); // File path for room data
+
+// Load existing room data from the JSON file
+let rooms = loadRooms();
 
 function createRoom() {
     const roomCode = generateRoomCode();
     rooms.push({ code: roomCode, players: [] });
 
+    saveRooms(); // Save the updated room data
     displayRoomSection(roomCode);
 }
 
@@ -13,12 +20,12 @@ function joinRoom() {
     const playerNameInput = document.getElementById("playerNameInput");
     const roomCode = roomCodeInput.value.toUpperCase();
     const playerName = playerNameInput.value.trim();
-// console.log(rooms)
-console.log(roomCode)
+
     if (roomCode && playerName) {
         const room = rooms.find(r => r.code === roomCode);
         if (room) {
             room.players.push(playerName);
+            saveRooms(); // Save the updated room data
             displayRoomSection(roomCode);
         } else {
             alert("Invalid room code. Please try again.");
@@ -39,11 +46,26 @@ function displayRoomSection(roomCode) {
 
     const playerList = document.getElementById("playerList");
     playerList.innerHTML = "";
-    
+
     const room = rooms.find(r => r.code === roomCode);
     room.players.forEach(player => {
         const li = document.createElement("li");
         li.textContent = player;
         playerList.appendChild(li);
     });
+}
+
+function saveRooms() {
+    const data = JSON.stringify(rooms, null, 2);
+    fs.writeFileSync(roomsFilePath, data);
+}
+
+function loadRooms() {
+    try {
+        const data = fs.readFileSync(roomsFilePath, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        // If the file doesn't exist or is empty, return an empty array
+        return [];
+    }
 }
