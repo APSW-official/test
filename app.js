@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function processFile() {
     const filePath = 'text.xlsx'; // Update with your actual file path
-    const outputDiv = document.getElementById('output');
+    const outputDiv = document.getElementById('#output');
   
     const xhr = new XMLHttpRequest();
     xhr.open('GET', filePath, true);
